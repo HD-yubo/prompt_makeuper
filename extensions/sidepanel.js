@@ -40,8 +40,27 @@ function init() {
     // Attach event listeners
     attachEventListeners();
 
+    // Listen for messages from background script
+    chrome.runtime.onMessage.addListener(handleBackgroundMessage);
+
     // Focus on input field
     elements.inputPrompt.focus();
+}
+
+/**
+ * Handle messages from background script
+ */
+function handleBackgroundMessage(message, sender, sendResponse) {
+    if (message.action === 'autoOptimize' && message.prompt) {
+        // Fill the input with the selected text
+        elements.inputPrompt.value = message.prompt;
+        handleInputChange();
+
+        // Auto-trigger optimization
+        setTimeout(() => {
+            optimizePrompt();
+        }, 300);
+    }
 }
 
 /**
