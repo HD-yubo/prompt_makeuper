@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI
 from app.config import settings
+from app.services.llm_logger import log_llm_interaction
 
 
 class LLMClient:
@@ -11,12 +12,16 @@ class LLMClient:
             base_url=settings.OPENAI_BASE_URL
         )
 
-    async def chat(self, messages: list, **kwargs) -> str:
+    @log_llm_interaction
+    async def chat(self, messages: list, stage: str = None, skill_name: str = None, iteration: int = None, **kwargs) -> str:
         """
-        Simple chat completion.
+        Simple chat completion with optional logging context.
 
         Args:
             messages: List of message dicts with 'role' and 'content'
+            stage: Pipeline stage for logging (skill_selection, skill_application, quality_check)
+            skill_name: Name of skill being applied
+            iteration: Iteration number for refinement loops
             **kwargs: Additional arguments for the completion
 
         Returns:

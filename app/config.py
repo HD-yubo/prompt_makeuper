@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     MAX_ITERATIONS: int = Field(default=3)
     TEMPERATURE: float = Field(default=0.7)
 
+    # Logging Configuration
+    LOG_DIR: str = Field(default="logs")
+    ENABLE_LOGGING: bool = Field(default=True)
+    LOG_LEVEL: str = Field(default="INFO")
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

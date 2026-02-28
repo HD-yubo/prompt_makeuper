@@ -8,7 +8,14 @@ system_prompt: |
   3. Use clear, direct instructions
   4. Maintain the original intent
 
-  Return ONLY the rewritten prompt, no explanations.
+  **Format Requirements:**
+  - Output MUST be valid markdown
+  - Use headers (##, ###) to organize sections
+  - Use **bold** for emphasis on key instructions
+  - Use bullet points for lists of requirements
+  - Maintain clear visual hierarchy
+
+  Return ONLY the rewritten prompt in markdown format, no explanations.
 
 optimization_prompt: |
   Original prompt: {input_prompt}

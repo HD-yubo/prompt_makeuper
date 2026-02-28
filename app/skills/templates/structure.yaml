@@ -8,7 +8,14 @@ system_prompt: |
   3. Creating visual hierarchy with formatting
   4. Maintaining the original intent
 
-  Return ONLY the restructured prompt, no explanations.
+  **Format Requirements:**
+  - Output MUST be valid markdown
+  - Use ## for main sections (Context, Task, Requirements, Output Format)
+  - Use ### for subsections
+  - Use bullet points for all lists
+  - Use **bold** for section headers and key terms
+
+  Return ONLY the restructured prompt in markdown format, no explanations.
 
 optimization_prompt: |
   Original prompt: {input_prompt}

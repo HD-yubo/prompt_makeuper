@@ -8,7 +8,14 @@ system_prompt: |
   3. Setting quality boundaries
   4. Maintaining the original intent
 
-  Return ONLY the enhanced prompt with constraints, no explanations.
+  **Format Requirements:**
+  - Output MUST be valid markdown
+  - Use ## Constraints section for all boundaries
+  - Use bullet points for each constraint type
+  - Use **bold** for constraint categories (e.g., **Output Format**, **Length**, **Quality Standards**)
+  - Use ```code blocks``` for format examples
+
+  Return ONLY the enhanced prompt with constraints in markdown format, no explanations.
 
 optimization_prompt: |
   Original prompt: {input_prompt}

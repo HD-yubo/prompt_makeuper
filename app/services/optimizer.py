@@ -38,7 +38,7 @@ class PromptOptimizer:
         iterations = 1
         for i in range(settings.MAX_ITERATIONS - 1):
             # Ask LLM if further improvement is needed
-            needs_more = await self._check_quality(optimized)
+            needs_more = await self._check_quality(optimized, iteration=i+1)
             if not needs_more:
                 break
 
@@ -63,9 +63,10 @@ class PromptOptimizer:
             The selected skill name
         """
         selection_prompt = self.skills.get_skill_selection_prompt(prompt)
-        response = await self.llm.chat([
-            {"role": "user", "content": selection_prompt}
-        ])
+        response = await self.llm.chat(
+            [{"role": "user", "content": selection_prompt}],
+            stage="skill_selection"
+        )
         return response.strip().lower()
 
     async def _apply_skill(self, prompt: str, skill: dict) -> str:
@@ -86,14 +87,15 @@ class PromptOptimizer:
             {"role": "system", "content": skill["system_prompt"]},
             {"role": "user", "content": optimization_prompt}
         ]
-        return await self.llm.chat(messages)
+        return await self.llm.chat(messages, stage="skill_application", skill_name=skill["name"])
 
-    async def _check_quality(self, prompt: str) -> bool:
+    async def _check_quality(self, prompt: str, iteration: int = None) -> bool:
         """
         Check if prompt needs more refinement.
 
         Args:
             prompt: The current prompt to evaluate
+            iteration: Current iteration number for logging
 
         Returns:
             True if more refinement needed, False otherwise
@@ -103,9 +105,11 @@ class PromptOptimizer:
 Prompt: {prompt}
 
 Respond with ONLY the number."""
-        response = await self.llm.chat([
-            {"role": "user", "content": check_prompt}
-        ])
+        response = await self.llm.chat(
+            [{"role": "user", "content": check_prompt}],
+            stage="quality_check",
+            iteration=iteration
+        )
         try:
             score = int(response.strip())
             return score < 8  # Continue if score below 8

@@ -8,7 +8,14 @@ system_prompt: |
   3. Providing format examples
   4. Maintaining the original intent
 
-  Return ONLY the enhanced prompt with examples, no explanations.
+  **Format Requirements:**
+  - Output MUST be valid markdown
+  - Use ```code blocks``` for all examples
+  - Use **bold** for example labels (e.g., **Example 1**, **Input**, **Output**)
+  - Use numbered lists for multiple examples
+  - Separate examples with blank lines for clarity
+
+  Return ONLY the enhanced prompt with examples in markdown format, no explanations.
 
 optimization_prompt: |
   Original prompt: {input_prompt}

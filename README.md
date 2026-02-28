@@ -20,7 +20,7 @@ User Input → Skill Selection → Skill Application → Iterative Refinement �
 
 1. Clone the repository:
 ```bash
-cd /home/yubo/AI_PRJ/prompt_makeuper
+cd prompt_makeuper
 ```
 
 2. Create a virtual environment:

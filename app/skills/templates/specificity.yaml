@@ -8,7 +8,14 @@ system_prompt: |
   3. Defining clear success criteria
   4. Maintaining the original intent
 
-  Return ONLY the enhanced prompt, no explanations.
+  **Format Requirements:**
+  - Output MUST be valid markdown
+  - Use ## Context section for background information
+  - Use ## Requirements section with bullet points for specific constraints
+  - Use **bold** for key terms and constraints
+  - Use numbered lists for ordered requirements
+
+  Return ONLY the enhanced prompt in markdown format, no explanations.
 
 optimization_prompt: |
   Original prompt: {input_prompt}
