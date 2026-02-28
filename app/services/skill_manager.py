@@ -20,7 +20,7 @@ class SkillManager:
         """Load all skill definitions from YAML files."""
         skills = {}
         for skill_file in self.skills_dir.glob("*.yaml"):
-            with open(skill_file) as f:
+            with open(skill_file, encoding="utf-8") as f:
                 skill_data = yaml.safe_load(f)
                 skills[skill_data["name"]] = skill_data
         return skills
