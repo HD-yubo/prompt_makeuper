@@ -5,15 +5,15 @@ A FastAPI-based service that enhances user-provided prompts using LLM-powered an
 ## Architecture
 
 ```
-User Input → Skill Selection → Skill Application → Iterative Refinement → Optimized Prompt
-                (LLM)                (Template)              (LLM)
+User Input → Skill Selection → Skill Application → Optimized Prompt
+                (LLM)                (Template)
 ```
 
 ## Features
 
 - **8 Predefined Skills**: Organized by complexity (Foundation, Intermediate, Advanced)
 - **Intelligent LLM-Powered Skill Selection**: Automatically chooses the best optimization strategy
-- **Iterative Quality-Driven Refinement**: Continues improving until quality threshold is met
+- **Two-Round Optimization Process**: Fast and efficient (skill selection + single application)
 - **Comprehensive LLM Interaction Logging**: Debug and analyze all LLM interactions
 - **OpenAI-Compatible**: Works with OpenAI, Azure OpenAI, Ollama, LM Studio, and more
 - **FastAPI Best Practices**: Async/await, Pydantic validation, clean architecture
@@ -58,7 +58,6 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4o-mini
 
 # Optimization Settings
-MAX_ITERATIONS=3
 TEMPERATURE=0.7
 
 # Logging Configuration
@@ -147,7 +146,7 @@ Optimize a prompt using LLM-powered skill selection and refinement.
 {
   "output_prompt": "Write a Python function that...",
   "skill_used": "specificity",
-  "iterations": 2
+  "iterations": 1
 }
 ```
 

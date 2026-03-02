@@ -68,7 +68,6 @@ All LLM settings are in `.env`:
 - `OPENAI_API_KEY`: API credential
 - `OPENAI_BASE_URL`: Supports any OpenAI-compatible endpoint (OpenAI, Azure, Ollama, LM Studio, etc.)
 - `OPENAI_MODEL`: Model identifier
-- `MAX_ITERATIONS`: Refinement loop limit
 - `TEMPERATURE`: LLM temperature
 
 Configuration is loaded via `pydantic-settings` in `app/config.py`. The `Settings` class automatically reads from `.env` file—no manual parsing needed.

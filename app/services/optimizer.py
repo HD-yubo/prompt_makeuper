@@ -31,25 +31,14 @@ class PromptOptimizer:
         selected_skill_name = await self._select_skill(input_prompt)
         skill = self.skills.get_skill(selected_skill_name)
 
-        # Stage 2: Apply skill (first iteration)
+        # Stage 2: Apply skill (single optimization)
         optimized = await self._apply_skill(input_prompt, skill)
 
-        # Stage 3: Iterative refinement
-        iterations = 1
-        for i in range(settings.MAX_ITERATIONS - 1):
-            # Ask LLM if further improvement is needed
-            needs_more = await self._check_quality(optimized, iteration=i+1)
-            if not needs_more:
-                break
-
-            # Refine using same skill
-            optimized = await self._apply_skill(optimized, skill)
-            iterations += 1
-
+        # Return result immediately without quality check iterations
         return {
             "prompt": optimized,
             "skill": selected_skill_name,
-            "iterations": iterations
+            "iterations": 1
         }
 
     async def _select_skill(self, prompt: str) -> str:

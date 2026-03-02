@@ -458,7 +458,7 @@ Content-Type: application/json
 {
   "output_prompt": "## Task\nWrite a Python script that...",
   "skill_used": "specificity",
-  "iterations": 2
+  "iterations": 1
 }
 ```
 
