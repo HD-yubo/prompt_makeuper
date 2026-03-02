@@ -11,10 +11,13 @@ User Input → Skill Selection → Skill Application → Iterative Refinement �
 
 ## Features
 
-- **5 Predefined Skills**: clarity, specificity, structure, examples, constraints
-- **Two-Stage LLM Pipeline**: Select skill → Apply iterative refinement
-- **OpenAI-Compatible**: Works with OpenAI, Azure OpenAI, and local models
+- **8 Predefined Skills**: Organized by complexity (Foundation, Intermediate, Advanced)
+- **Intelligent LLM-Powered Skill Selection**: Automatically chooses the best optimization strategy
+- **Iterative Quality-Driven Refinement**: Continues improving until quality threshold is met
+- **Comprehensive LLM Interaction Logging**: Debug and analyze all LLM interactions
+- **OpenAI-Compatible**: Works with OpenAI, Azure OpenAI, Ollama, LM Studio, and more
 - **FastAPI Best Practices**: Async/await, Pydantic validation, clean architecture
+- **Chrome Extension**: Browser integration for seamless prompt optimization
 
 ## Installation
 
@@ -45,6 +48,10 @@ cp .env.example .env
 Edit `.env` with your settings:
 
 ```bash
+# API Server Configuration
+API_HOST=0.0.0.0      # Host to bind to
+API_PORT=8000         # Port to listen on
+
 # LLM Configuration
 OPENAI_API_KEY=your-api-key-here
 OPENAI_BASE_URL=https://api.openai.com/v1
@@ -53,6 +60,11 @@ OPENAI_MODEL=gpt-4o-mini
 # Optimization Settings
 MAX_ITERATIONS=3
 TEMPERATURE=0.7
+
+# Logging Configuration
+LOG_DIR=logs          # Log directory
+ENABLE_LOGGING=true   # Enable/disable logging
+LOG_LEVEL=INFO        # Log level (DEBUG, INFO, WARNING, ERROR)
 ```
 
 ### LLM Provider Examples
@@ -194,13 +206,137 @@ prompt_makeuper/
 
 ## Skills
 
-| Skill | Description |
-|-------|-------------|
-| **clarity** | Remove ambiguity and reorganize for logical flow |
-| **specificity** | Add details, constraints, and context |
-| **structure** | Organize with clear sections and formatting |
-| **examples** | Include relevant examples to clarify expectations |
-| **constraints** | Define output format and boundaries |
+### Foundation Skills
+
+| Skill | Description | Best For |
+|-------|-------------|----------|
+| **clarity** | Remove ambiguity and reorganize for logical flow | Unclear or confusing prompts |
+| **specificity** | Add details, constraints, and context | Vague or generic requests |
+| **structure** | Organize with clear sections and formatting | Disorganized prompts |
+
+### Intermediate Skills
+
+| Skill | Description | Best For |
+|-------|-------------|----------|
+| **examples** | Include relevant examples to clarify expectations | Prompts requiring specific output formats |
+| **constraints** | Define output format and boundaries | Open-ended tasks needing focus |
+
+### Advanced Skills
+
+| Skill | Description | Best For |
+|-------|-------------|----------|
+| **mental_model** | Surface implicit goals and align mental models | Complex multi-step tasks |
+| **self_verify** | Add verification checkpoints and error handling | Critical outputs requiring validation |
+| **progressive** | Break complex prompts into progressive steps | Large-scale multi-stage projects |
+
+## LLM Interaction Logging
+
+The service automatically logs all LLM interactions for debugging and analysis.
+
+### Log Format
+
+Logs are stored as JSON in `logs/YYYYMMDD.log`:
+
+```json
+{
+  "timestamp": "2026-03-02T10:30:45.123456",
+  "stage": "skill_application",
+  "metadata": {
+    "skill_name": "clarity",
+    "iteration": 1
+  },
+  "input": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."}
+  ],
+  "output": "Optimized prompt text..."
+}
+```
+
+### Configuration
+
+```bash
+# .env
+ENABLE_LOGGING=true    # Enable/disable logging
+LOG_DIR=logs          # Log directory
+LOG_LEVEL=INFO        # Log level (DEBUG, INFO, WARNING, ERROR)
+```
+
+### Viewing Logs
+
+```bash
+# View today's logs
+cat logs/$(date +%Y%m%d).log | jq
+
+# Search for specific skill
+cat logs/20260302.log | jq 'select(.metadata.skill_name == "clarity")'
+
+# Count skill usage
+cat logs/*.log | jq -r '.metadata.skill_name' | sort | uniq -c
+```
+
+## Usage Examples
+
+### Example 1: Clarifying a Vague Request
+
+**Input:** "write code"
+
+**Output with clarity skill:**
+```markdown
+## Task
+Write a Python script
+
+## Requirements
+- Purpose: [specify what the code should do]
+- Language: Python 3.9+
+- Output: Console application
+- Error handling: Include basic error handling
+```
+
+### Example 2: Adding Specificity
+
+**Input:** "make a website"
+
+**Output with specificity skill:**
+```markdown
+## Project: Web Application Development
+
+## Context
+Create a [type of website] for [target audience]
+
+## Technical Requirements
+- Framework: [React/Vue/Plain HTML]
+- Styling: [CSS framework of choice]
+- Backend: [API requirements]
+- Database: [if needed]
+
+## Features
+1. [Feature 1]
+2. [Feature 2]
+3. [Feature 3]
+```
+
+### Example 3: Adding Mental Model Alignment
+
+**Input:** "fix the bug"
+
+**Output with mental_model skill:**
+```markdown
+## Intent
+**Diagnose and resolve** the software issue affecting [specific functionality]
+
+## Assumptions
+- The bug is reproducible
+- Access to error logs and stack traces is available
+- Testing environment is set up
+- Root cause is within the application code (not external dependencies)
+
+## Success Criteria
+- Bug is fixed without introducing new issues
+- Fix is tested and verified
+- Documentation is updated if needed
+- Code review is completed
+```
 
 ## License
 
