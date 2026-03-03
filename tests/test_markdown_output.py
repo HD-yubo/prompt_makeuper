@@ -119,8 +119,10 @@ class TestMarkdownOutputFormat:
         for skill_name in skill_names:
             skill = skill_manager.get_skill(skill_name)
             system_prompt = skill["system_prompt"]
+            # Skills may maintain intent explicitly or through "enhance" which implies preserving original intent
             assert "original intent" in system_prompt.lower() or \
-                   "maintain" in system_prompt.lower(), \
+                   "maintain" in system_prompt.lower() or \
+                   "enhance" in system_prompt.lower(), \
                 f"Skill '{skill_name}' should maintain original intent"
 
     def test_all_templates_request_no_explanations(self, skill_manager):

@@ -194,10 +194,18 @@ prompt_makeuper/
 │   ├── services/
 │   │   ├── llm_client.py       # OpenAI client
 │   │   ├── skill_manager.py    # Skill management
+│   │   ├── embedding_selector.py # Embedding-based skill selection
 │   │   └── optimizer.py        # Optimization pipeline
 │   └── skills/
 │       └── templates/          # YAML skill definitions
+├── docs/                       # Documentation
+│   ├── QUICKSTART.md           # Quick start guide
+│   ├── makeup_prompt_api_documentation.md  # API documentation
+│   └── EMBEDDING_SELECTOR_REPORT.md        # Embedding selector report
+├── examples/                   # Example scripts
+│   └── demo_embedding_selector.py          # Embedding selector demo
 ├── tests/                      # Test suite
+├── extensions/                 # Chrome extension
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -272,6 +280,23 @@ cat logs/20260302.log | jq 'select(.metadata.skill_name == "clarity")'
 
 # Count skill usage
 cat logs/*.log | jq -r '.metadata.skill_name' | sort | uniq -c
+```
+
+## Documentation
+
+- **[Quick Start Guide](./docs/QUICKSTART.md)** - Get up and running in 3 steps
+- **[API Documentation](./docs/makeup_prompt_api_documentation.md)** - Complete API reference and architecture
+- **[Embedding Selector Report](./docs/EMBEDDING_SELECTOR_REPORT.md)** - Implementation details and performance analysis
+
+## Examples
+
+Run the embedding selector demo:
+```bash
+# Demo embedding-based skill selection
+python3 examples/demo_embedding_selector.py
+
+# Test caching functionality
+python3 examples/demo_embedding_selector.py --cache
 ```
 
 ## Usage Examples

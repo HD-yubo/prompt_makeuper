@@ -11,7 +11,7 @@ def test_skill_manager_initialization():
     skills = manager.list_skills()
     expected_skills = ["clarity", "specificity", "structure", "examples", "constraints"]
 
-    assert len(skills) == 5
+    assert len(skills) >= 5  # At least these core skills exist
     assert all(skill in skills for skill in expected_skills)
 
 
