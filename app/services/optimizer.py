@@ -4,6 +4,53 @@ from app.services.embedding_selector import EmbeddingSkillSelector
 from app.config import settings
 
 
+def detect_language(text: str) -> str:
+    """
+    Detect language from input text using Unicode ranges.
+
+    Args:
+        text: Input text to analyze
+
+    Returns:
+        Language code: 'zh', 'ja', 'ko', 'en'
+    """
+    counts = {"zh": 0, "ja": 0, "ko": 0, "en": 0}
+
+    for char in text:
+        code = ord(char)
+        if 0x4e00 <= code <= 0x9fff:  # Chinese
+            counts["zh"] += 1
+        elif 0x3040 <= code <= 0x309f or 0x30a0 <= code <= 0x30ff:  # Japanese
+            counts["ja"] += 1
+        elif 0xac00 <= code <= 0xd7af:  # Korean
+            counts["ko"] += 1
+        elif 0x0000 <= code <= 0x007f:  # ASCII (English)
+            counts["en"] += 1
+
+    if max(counts.values()) == 0:
+        return "en"
+    return max(counts, key=counts.get)
+
+
+def get_language_instruction(language: str) -> str:
+    """
+    Get output language instruction for the given language.
+
+    Args:
+        language: Language code
+
+    Returns:
+        Language instruction string
+    """
+    instructions = {
+        "zh": "Output the optimized prompt in Simplified Chinese (简体中文) only.",
+        "ja": "Output the optimized prompt in Japanese (日本語) only.",
+        "ko": "Output the optimized prompt in Korean (한국어) only.",
+        "en": "Output the optimized prompt in the same language as the input."
+    }
+    return instructions.get(language, instructions["en"])
+
+
 class PromptOptimizer:
     """Main pipeline for prompt optimization."""
 
@@ -79,11 +126,15 @@ class PromptOptimizer:
         Returns:
             The optimized prompt
         """
+        # Detect input language and generate corresponding output instruction
+        language = detect_language(prompt)
+        language_instruction = get_language_instruction(language)
+
         optimization_prompt = skill["optimization_prompt"].format(
             input_prompt=prompt
         )
         messages = [
-            {"role": "system", "content": skill["system_prompt"] + "\n\nIMPORTANT: Output the optimized prompt in Simplified Chinese (简体中文) only."},
+            {"role": "system", "content": skill["system_prompt"] + "\n\nIMPORTANT: " + language_instruction},
             {"role": "user", "content": optimization_prompt}
         ]
         return await self.llm.chat(messages, stage="skill_application", skill_name=skill["name"])

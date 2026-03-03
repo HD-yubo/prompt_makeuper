@@ -3,7 +3,7 @@
   "name": "Prompt Maker",
   "version": "1.0.0",
   "description": "Optimize your prompts using AI-powered skill selection and refinement",
-  "api_base_url": "https:/www.zejun.space/api",
+  "api_base_url": "http://localhost:8000",
   "permissions": [
     "activeTab",
     "sidePanel",
