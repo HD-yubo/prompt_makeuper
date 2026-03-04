@@ -31,9 +31,12 @@ async def makeup_prompt(request: MakeupRequest) -> MakeupResponse:
 
     This endpoint analyzes the input prompt, selects the most appropriate
     optimization skill, and applies iterative refinement to produce an
-    improved version.
+    improved version in the specified output format.
     """
-    result = await optimizer.optimize(request.input_prompt)
+    result = await optimizer.optimize(
+        request.input_prompt,
+        output_type=request.output_type.value
+    )
     return MakeupResponse(
         output_prompt=result["prompt"],
         skill_used=result["skill"],

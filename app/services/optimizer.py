@@ -67,12 +67,13 @@ class PromptOptimizer:
         # Initialize embedding selector for fast skill selection
         self.embedding_selector = EmbeddingSkillSelector(skill_manager)
 
-    async def optimize(self, input_prompt: str) -> dict:
+    async def optimize(self, input_prompt: str, output_type: str = "markdown") -> dict:
         """
         Main optimization pipeline.
 
         Args:
             input_prompt: The user's original prompt
+            output_type: Desired output format ('markdown' or 'xml')
 
         Returns:
             Dict with 'prompt', 'skill', and 'iterations'
@@ -81,8 +82,8 @@ class PromptOptimizer:
         selected_skill_name = await self._select_skill(input_prompt)
         skill = self.skills.get_skill(selected_skill_name)
 
-        # Stage 2: Apply skill (single optimization)
-        optimized = await self._apply_skill(input_prompt, skill)
+        # Stage 2: Apply skill with output format
+        optimized = await self._apply_skill(input_prompt, skill, output_type)
 
         # Return result immediately without quality check iterations
         return {
@@ -115,13 +116,14 @@ class PromptOptimizer:
         )
         return response.strip().lower()
 
-    async def _apply_skill(self, prompt: str, skill: dict) -> str:
+    async def _apply_skill(self, prompt: str, skill: dict, output_type: str = "markdown") -> str:
         """
-        Apply a skill's optimization template.
+        Apply a skill's optimization template with specified output format.
 
         Args:
             prompt: The prompt to optimize
             skill: The skill definition dict
+            output_type: Desired output format ('markdown' or 'xml')
 
         Returns:
             The optimized prompt
@@ -130,11 +132,18 @@ class PromptOptimizer:
         language = detect_language(prompt)
         language_instruction = get_language_instruction(language)
 
+        # Get format-specific instructions
+        from app.services.formatter import get_format_instructions
+        format_instruction = get_format_instructions(output_type)
+
         optimization_prompt = skill["optimization_prompt"].format(
             input_prompt=prompt
         )
         messages = [
-            {"role": "system", "content": skill["system_prompt"] + "\n\nIMPORTANT: " + language_instruction},
+            {
+                "role": "system",
+                "content": skill["system_prompt"] + "\n\n" + format_instruction + "\n\nIMPORTANT: " + language_instruction
+            },
             {"role": "user", "content": optimization_prompt}
         ]
         return await self.llm.chat(messages, stage="skill_application", skill_name=skill["name"])
