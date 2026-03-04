@@ -16,6 +16,21 @@
         <!-- Message area for errors/success notifications -->
         <div id="messageArea" class="message-area hidden"></div>
 
+        <!-- Output format selector -->
+        <div class="section format-selector-section">
+            <label class="label">Output Format</label>
+            <div class="format-selector" id="formatSelector">
+                <label class="format-option">
+                    <input type="radio" name="outputType" value="markdown" checked>
+                    <span class="format-label">Markdown</span>
+                </label>
+                <label class="format-option">
+                    <input type="radio" name="outputType" value="xml">
+                    <span class="format-label">XML</span>
+                </label>
+            </div>
+        </div>
+
         <!-- Input section -->
         <div class="section">
             <label for="inputPrompt" class="label">Your Prompt</label>

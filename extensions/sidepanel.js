@@ -22,13 +22,16 @@ const elements = {
     skillUsed: null,
     iterations: null,
     btnText: null,
-    btnSpinner: null
+    btnSpinner: null,
+    formatSelector: null,
+    formatInputs: null
 };
 
 // Application State
 const state = {
     isLoading: false,
-    inputValue: ''
+    inputValue: '',
+    outputType: 'markdown'
 };
 
 /**
@@ -37,6 +40,9 @@ const state = {
 function init() {
     // Cache DOM elements
     cacheElements();
+
+    // Load saved output type preference
+    loadOutputTypePreference();
 
     // Attach event listeners
     attachEventListeners();
@@ -79,6 +85,8 @@ function cacheElements() {
     elements.iterations = document.getElementById('iterations');
     elements.btnText = elements.optimizeBtn.querySelector('.btn-text');
     elements.btnSpinner = elements.optimizeBtn.querySelector('.btn-spinner');
+    elements.formatSelector = document.getElementById('formatSelector');
+    elements.formatInputs = elements.formatSelector.querySelectorAll('input[type="radio"]');
 }
 
 /**
@@ -97,6 +105,11 @@ function attachEventListeners() {
     // Copy button click
     elements.copyBtn.addEventListener('click', copyToClipboard);
 
+    // Output format change listeners
+    elements.formatInputs.forEach(input => {
+        input.addEventListener('change', handleFormatChange);
+    });
+
     // Keyboard shortcut: Ctrl/Cmd + Enter to optimize
     elements.inputPrompt.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -114,6 +127,28 @@ function attachEventListeners() {
 function handleInputChange() {
     state.inputValue = elements.inputPrompt.value.trim();
     elements.optimizeBtn.disabled = state.inputValue === '' || state.isLoading;
+}
+
+/**
+ * Handle output format selection changes
+ */
+function handleFormatChange(e) {
+    state.outputType = e.target.value;
+    localStorage.setItem('outputType', state.outputType);
+}
+
+/**
+ * Load saved output type preference from localStorage
+ */
+function loadOutputTypePreference() {
+    const savedType = localStorage.getItem('outputType');
+    if (savedType && (savedType === 'markdown' || savedType === 'xml')) {
+        state.outputType = savedType;
+        // Update radio buttons to match saved preference
+        elements.formatInputs.forEach(input => {
+            input.checked = (input.value === savedType);
+        });
+    }
 }
 
 /**
@@ -162,7 +197,10 @@ async function optimizePrompt() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ input_prompt: inputPrompt }),
+            body: JSON.stringify({
+                input_prompt: inputPrompt,
+                output_type: state.outputType
+            }),
             timeout: 60000 // 60 second timeout for optimization
         });
 
@@ -175,7 +213,10 @@ async function optimizePrompt() {
         // Update UI with results
         elements.outputPrompt.value = data.output_prompt || 'No output received';
         showMetadata(data.skill_used, data.iterations);
-        showMessage('Prompt optimized successfully!', 'success');
+
+        // Show format-specific success message
+        const formatLabel = state.outputType === 'xml' ? 'XML' : 'Markdown';
+        showMessage(`Prompt optimized successfully (${formatLabel} format)!`, 'success');
 
     } catch (error) {
         console.error('Optimization error:', error);
