@@ -39,7 +39,6 @@ You MUST output the optimized prompt as valid XML with the following structure:
     <good>[Positive example]</good>
     <bad>[What to avoid]</bad>
   </examples>
-  <constraints>[Specific limitations and requirements]</constraints>
   <output_format>[Expected structure and format of the output]</output_format>
 </prompt>
 ```
