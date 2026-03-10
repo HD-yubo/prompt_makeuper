@@ -6,6 +6,7 @@
 // API Configuration - Read from manifest.json, fallback to localhost
 const manifest = chrome.runtime.getManifest();
 const API_BASE_URL = manifest.api_base_url || 'http://localhost:8000';
+const MAKEUP_REQUEST_TIMEOUT_MS = 90000;
 const ENDPOINTS = {
     MAKEUP: `${API_BASE_URL}/makeup_prompt`
 };
@@ -263,7 +264,7 @@ async function optimizePrompt() {
                 input_prompt: inputPrompt,
                 output_type: state.outputType
             }),
-            timeout: 60000 // 60 second timeout for optimization
+            timeout: MAKEUP_REQUEST_TIMEOUT_MS
         });
 
         if (!response.ok) {
