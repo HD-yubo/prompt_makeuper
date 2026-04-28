@@ -1,8 +1,27 @@
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from app.main import app, optimizer
 
 client = TestClient(app)
+
+
+@pytest.fixture
+def mock_optimizer(monkeypatch):
+    async def fake_optimize(input_prompt: str, output_type: str = "markdown", skill_name=None):
+        if output_type == "xml":
+            return {
+                "prompt": "<prompt><system_role>writer</system_role><goal>write</goal></prompt>",
+                "skill": skill_name or "structure",
+                "iterations": 1,
+            }
+
+        return {
+            "prompt": "## Task\n\nWrite something useful",
+            "skill": skill_name or "clarity",
+            "iterations": 1,
+        }
+
+    monkeypatch.setattr(optimizer, "optimize", fake_optimize)
 
 
 def test_health_endpoint():
@@ -38,7 +57,7 @@ def test_makeup_prompt_missing_input():
     assert response.status_code == 422  # Validation error
 
 
-def test_makeup_prompt_with_xml_output():
+def test_makeup_prompt_with_xml_output(mock_optimizer):
     """Test makeup prompt endpoint with XML output type."""
     response = client.post(
         "/makeup_prompt",
@@ -57,7 +76,7 @@ def test_makeup_prompt_with_xml_output():
     assert "<goal>" in data["output_prompt"]
 
 
-def test_makeup_prompt_default_markdown():
+def test_makeup_prompt_default_markdown(mock_optimizer):
     """Test that default output is markdown when output_type is not specified."""
     response = client.post(
         "/makeup_prompt",

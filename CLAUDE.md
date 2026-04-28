@@ -8,6 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Start development server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
+# Run CLI mode
+python -m app.cli "write code"
+python -m app.cli "write code" --skill structure
+python -m app.cli --list-skills
+./prompt-makeuper "write code"
+
 # Run all tests
 pytest
 

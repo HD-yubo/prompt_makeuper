@@ -130,6 +130,31 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 The API will be available at `http://localhost:8000`
 
+## Command Line Usage
+
+Run prompt optimization without starting the HTTP service:
+
+```bash
+python -m app.cli "写一个关于AI的文章"
+python -m app.cli "写一个关于AI的文章" --output-type xml
+python -m app.cli "写一个关于AI的文章" --skill structure
+python -m app.cli --list-skills
+python -m app.cli --file prompt.txt
+cat prompt.txt | python -m app.cli
+python -m app.cli "写一个关于AI的文章" --json
+```
+
+Short wrapper command:
+
+```bash
+./prompt-makeuper "写一个关于AI的文章"
+./prompt-makeuper --list-skills
+```
+
+CLI defaults to printing only the optimized prompt. Use `--json` to print the full result payload.
+Use `--skill <name>` to bypass automatic skill selection and force a specific skill.
+Use `--list-skills` to print all available skills and exit.
+
 ## API Endpoints
 
 ### POST /makeup_prompt

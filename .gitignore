@@ -50,3 +50,6 @@ htmlcov/
 docs/
 .github/
 .claude/
+
+
+start.sh

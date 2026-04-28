@@ -65,20 +65,28 @@ class PromptOptimizer:
         # Initialize embedding selector for fast skill selection
         self.embedding_selector = EmbeddingSkillSelector(skill_manager)
 
-    async def optimize(self, input_prompt: str, output_type: str = "markdown") -> dict:
+    async def optimize(
+        self,
+        input_prompt: str,
+        output_type: str = "markdown",
+        skill_name: str | None = None,
+    ) -> dict:
         """
         Main optimization pipeline.
 
         Args:
             input_prompt: The user's original prompt
             output_type: Desired output format ('markdown' or 'xml')
+            skill_name: Optional skill name to force, skipping auto-selection
 
         Returns:
             Dict with 'prompt', 'skill', and 'iterations'
         """
         # Stage 1: Select skill
-        selected_skill_name = await self._select_skill(input_prompt)
+        selected_skill_name = skill_name or await self._select_skill(input_prompt)
         skill = self.skills.get_skill(selected_skill_name)
+        if skill is None:
+            raise ValueError(f"Unknown skill: {selected_skill_name}")
 
         # Stage 2: Apply skill with output format
         optimized = await self._apply_skill(input_prompt, skill, output_type)
