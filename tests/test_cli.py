@@ -30,7 +30,11 @@ def fake_optimizer(monkeypatch):
 
 @pytest.fixture
 def fake_skill_list(monkeypatch):
-    skills = ["clarity", "specificity", "structure"]
+    skills = [
+        ("clarity", "Make prompts easier to understand."),
+        ("specificity", "Add missing details and constraints."),
+        ("structure", "Organize prompts into clearer sections."),
+    ]
     monkeypatch.setattr(cli, "list_skills", lambda: skills)
     return skills
 
@@ -134,8 +138,23 @@ def test_cli_lists_skills_without_prompt(capsys, fake_optimizer, fake_skill_list
 
     captured = capsys.readouterr()
     assert exit_code == 0
-    assert captured.out.strip().splitlines() == fake_skill_list
+    assert captured.out.strip().splitlines() == [
+        "clarity: Make prompts easier to understand.",
+        "specificity: Add missing details and constraints.",
+        "structure: Organize prompts into clearer sections.",
+    ]
     assert fake_optimizer.calls == []
+
+
+def test_cli_help_includes_skill_summaries(capsys, fake_skill_list):
+    with pytest.raises(SystemExit) as exc_info:
+        cli.main(["--help"])
+
+    captured = capsys.readouterr()
+    assert exc_info.value.code == 0
+    assert "Available skills:" in captured.out
+    assert "clarity: Make prompts easier to understand." in captured.out
+    assert "structure: Organize prompts into clearer sections." in captured.out
 
 
 def test_prompt_makeuper_wrapper_script_exists():

@@ -13,12 +13,28 @@ def build_optimizer() -> PromptOptimizer:
     return PromptOptimizer(LLMClient(), SkillManager(Path("app/skills")))
 
 
-def list_skills() -> list[str]:
-    return SkillManager(Path("app/skills")).list_skills()
+def list_skills() -> list[tuple[str, str]]:
+    manager = SkillManager(Path("app/skills"))
+    return [
+        (skill.name, skill.description)
+        for skill in manager.metadata.values()
+    ]
+
+
+def format_skill_list(skills: list[tuple[str, str]]) -> list[str]:
+    return [f"{name}: {description}" for name, description in skills]
+
+
+def build_help_description() -> str:
+    skills_text = "\n".join(format_skill_list(list_skills()))
+    return f"Optimize prompts from the command line\n\nAvailable skills:\n{skills_text}"
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Optimize prompts from the command line")
+    parser = argparse.ArgumentParser(
+        description=build_help_description(),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("prompt", nargs="?", help="Prompt text to optimize")
     parser.add_argument("--file", dest="file_path", help="Read the prompt from a file")
     parser.add_argument(
@@ -49,7 +65,7 @@ def read_prompt(args: argparse.Namespace) -> str:
 
 async def run(args: argparse.Namespace) -> int:
     if args.list_skills:
-        for skill in list_skills():
+        for skill in format_skill_list(list_skills()):
             print(skill)
         return 0
 
@@ -64,7 +80,7 @@ async def run(args: argparse.Namespace) -> int:
         return 1
 
     if args.skill:
-        available_skills = list_skills()
+        available_skills = [name for name, _ in list_skills()]
         if args.skill not in available_skills:
             print(
                 f"Unknown skill: {args.skill}. Available skills: {', '.join(available_skills)}",
